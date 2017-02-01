@@ -1,6 +1,6 @@
 Package.describe({
   name:     'ksrv:autoform-timepicker',
-  version:  '0.0.1',
+  version:  '0.0.2',
   summary:  'Meteor autoform simple timepicker field as one (two, three) select.',
   git:      'git@github.com:ksrv/autoform-timepicker.git',
   documentation: 'README.md'
