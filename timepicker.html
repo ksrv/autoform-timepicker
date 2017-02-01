@@ -1,0 +1,29 @@
+
+<template name="ksrvTimepicker">
+  <div {{attrs}} >
+    {{#with this.atts.icon}}<span class="input-group-addon"><i class="{{this}}"></i></span>{{/with}}
+    {{#with atts}}
+      {{#with this.hours}}{{>ksrvTimepickerSelect}}{{/with}}
+      {{#with this.hmdivider}}{{>ksrvTimepickerdivider}}{{/with}}
+      {{#with this.minutes}}{{>ksrvTimepickerSelect}}{{/with}}
+      {{#with this.msdivider}}{{>ksrvTimepickerdivider}}{{/with}}
+      {{#with this.seconds}}{{>ksrvTimepickerSelect}}{{/with}}
+    {{/with}}
+  </div>
+</template>
+
+
+
+<template name="ksrvTimepickerSelect">
+  <select class="form-control" name="{{name}}">
+    {{#each options}}
+      <option {{attrs}} >{{this.label}}</option>
+    {{/each}}
+  </select>
+</template>
+
+
+
+<template name="ksrvTimepickerdivider">
+  <span class="input-group-addon divider">{{this}}</span>
+</template>

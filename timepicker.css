@@ -1,0 +1,6 @@
+.input-group.ksrv-timepicker .input-group-addon.divider {
+  border: none;
+  background-color: inherit;
+  width: 6px;
+  padding: 6px 0;
+}
