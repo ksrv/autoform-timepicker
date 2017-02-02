@@ -5,7 +5,11 @@ import { AutoForm } from 'meteor/aldeed:autoform';
 import { moment }   from 'meteor/momentjs:moment';
 
 AutoForm.valueConverters.timeToTimeString = function (val) {
-    return (val instanceof Date) ? moment(val).format('HH:mm:ss') : val;
+    if (!val instanceof Date) return val;
+
+    return [val.getHours(), val.getMinutes(), val.getSeconds()]
+        .map((t) => `00${t}`.slice(-2))
+        .join(':');
 }
 
 AutoForm.valueConverters.timeToNormalizedTime = function (val) {
@@ -37,50 +41,43 @@ AutoForm.addInputType('ksrv:autoform-timepicker', {
 
     contextAdjust (context) {
         let atts = _.clone(context.atts);
-        context.value = AutoForm.valueConverters.timeToNormalizedTime(context.value);
+        let normalize = (o) => AutoForm.valueConverters.timeToNormalizedTime(o);
+        let def;
+        let value;
+        if (typeof atts.min == 'undefined') atts.min = '00:00:00';
+        if (typeof atts.max == 'undefined') atts.max = '23:59:59';
+        if (!context.value) context.value = '00:00:00';
 
-        function createHoursOptions (choice) {
-            let option = { value: choice, label: `00${choice}`.slice(-2) };
-            if (typeof context.value.getHours === 'function') {
-                if (context.value.getHours() == choice) {
-                    option.selected = true;
-                }
-            }
-            return option;
-        }
+        context.value = normalize(context.value);
+        atts.min = normalize(atts.min);
+        atts.max = normalize(atts.max);
 
-        function createHoursOptions (choice) {
-            let option = { value: choice, label: `00${choice}`.slice(-2) };
-            if (typeof context.value.getHours === 'function') {
-                if (context.value.getHours() == choice) {
-                    option.selected = true;
-                }
-            }
-            return option;
-        }
+        def = { 
+            hours:   [...Array(24).keys()].slice(atts.min.getHours(), atts.max.getHours()), 
+            minutes: [...Array(60).keys()], 
+            seconds: [...Array(60).keys()]
+        };
 
-        function create (name, func) {
-            const length = { hours: 24, minutes: 60, seconds: 60 };
-            function option (choice) {
-                let option = { value: choice, label: `00${choice}`.slice(-2) };
-                if (typeof context.value[func] === 'function') {
-                    if (context.value[func]() == choice) {
+        value = { 
+            hours:   context.value.getHours(),
+            minutes: context.value.getMinutes(), 
+            seconds: context.value.getSeconds(), 
+        };
+
+        ['hours', 'minutes', 'seconds'].forEach((name) => {
+            if (typeof atts[name] === 'undefined' || atts[name]) {
+                atts[name] = atts[name] || def[name];
+                atts[name] = atts[name].map((t) => {
+                    let option = { value: parseInt(t), label: `00${t}`.slice(-2) };
+                    if (option.value == value[name]) {
                         option.selected = true;
                     }
-                }
-                return option;
+                    return option;
+                });
+                atts[name] = { name: name, options: atts[name] };
             }
+        });
 
-            if (typeof atts[name] == 'undefined' || atts[name]) {
-                let choices = atts[name] || [...Array(length[name]).keys()];
-                atts[name] = { name: name, options: choices.map(option) };
-            }
-        }
-
-        create('hours', 'getHours');
-        create('minutes', 'getMinutes');
-        create('seconds', 'getSeconds');
-        
         if (atts.hours && atts.minutes)   atts.hmdivider = ':';
         if (atts.minutes && atts.seconds) atts.msdivider = ':';
 

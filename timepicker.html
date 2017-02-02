@@ -1,7 +1,6 @@
 
 <template name="ksrvTimepicker">
   <div {{attrs}} >
-    {{#with this.atts.icon}}<span class="input-group-addon"><i class="{{this}}"></i></span>{{/with}}
     {{#with atts}}
       {{#with this.hours}}{{>ksrvTimepickerSelect}}{{/with}}
       {{#with this.hmdivider}}{{>ksrvTimepickerdivider}}{{/with}}
@@ -12,8 +11,6 @@
   </div>
 </template>
 
-
-
 <template name="ksrvTimepickerSelect">
   <select class="form-control" name="{{name}}">
     {{#each options}}
@@ -21,8 +18,6 @@
     {{/each}}
   </select>
 </template>
-
-
 
 <template name="ksrvTimepickerdivider">
   <span class="input-group-addon divider">{{this}}</span>
